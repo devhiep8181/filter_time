@@ -70,6 +70,7 @@ class AttendancceRemoteDatasourceImpl extends BaseRemoteDataSourceImpl
     });
     final respone = json.decode(request.body);
     final String token = respone['data']['tokenPhp'];
+    //print(token);
     var header = {'Authorization': 'Bearer $token'};
 
     final getData = await http.post(
@@ -80,10 +81,12 @@ class AttendancceRemoteDatasourceImpl extends BaseRemoteDataSourceImpl
     final data = json.decode(getData.body);
     print(data);
     List<DailyAttendanceReportEntity> result = [];
+    //print(result);
+    //print(data['data'][0]);
     for (int i = 0; i < data['data'].length; i++) {
-      result.add(DailyAttendanceReportEntity.fromMap(data.data[i]));
+      result.add(DailyAttendanceReportEntity.fromMap(data['data'][i]));
     }
-
+    print(result[0].employeeId);
     return result.toList();
   }
 

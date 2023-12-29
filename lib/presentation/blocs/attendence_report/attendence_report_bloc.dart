@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';
@@ -7,31 +9,29 @@ part 'attendence_report_event.dart';
 part 'attendence_report_state.dart';
 
 class AttendenceReportBloc
-    extends Bloc<AttendenceReportEvent, AttendenceReportState> {
+    extends Bloc<AttendenceReportInitEvent, AttendenceReportState> {
   GetDailyAttendanceReportUseCase getDailyAttendanceReportUseCase;
 
   AttendenceReportBloc({required this.getDailyAttendanceReportUseCase})
-      : super(const AttendenceReportState(
-            attendenceReportStatus: AttendenceReportStatus.initial,
-            listAttendanceReport: [])) {
-    on<ShowAttendenceReportEvent>(_onShowAttendenceReport);
+      : super(AttendenceReportInitial()) {
+    on<AttendenceReportInitEvent>(_onShowAttendenceReport);
+    //on<FilterTimeAttenceEvent>(_onFilterTimeAttenceEvent);
   }
-  
-  Future<void> _onShowAttendenceReport(ShowAttendenceReportEvent event,
+
+  FutureOr<void> _onShowAttendenceReport(AttendenceReportInitEvent event,
       Emitter<AttendenceReportState> emit) async {
     try {
-      emit(state.copyWith(
-          attendenceReportStatus: AttendenceReportStatus.loading));
+      emit(AttendenceReporLoading());
       final result = await getDailyAttendanceReportUseCase.call(
           GetDailyAttendanceReportParameter(
               startDate: DateTime(2020), endDate: DateTime(2024)));
-      print(result);
-      emit(state.copyWith(
-          attendenceReportStatus: AttendenceReportStatus.success,
-          listAttendanceReport: result));
+      emit(AttendenceReportFinishedState(listAttendanceReport: result));
     } catch (e) {
-      emit(
-          state.copyWith(attendenceReportStatus: AttendenceReportStatus.error));
+      print(e.toString());
+      emit(AttendenceReporError(error: e.toString()));
     }
   }
+
+  FutureOr<void> _onFilterTimeAttenceEvent(
+      FilterTimeAttenceEvent event, Emitter<AttendenceReportState> emit) {}
 }

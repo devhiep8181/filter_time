@@ -21,11 +21,6 @@ class DailyAttendanceReportEntity {
   dynamic commission;
   int? totalSalary;
 
-  String get id =>
-      workShiftId.toString() +
-      (timeCheckin?.toIso8601String() ?? '') +
-      (timeCheckout?.toIso8601String() ?? '');
-
   DailyAttendanceReportEntity({
     this.workShiftId,
     this.workShiftName,
@@ -46,29 +41,6 @@ class DailyAttendanceReportEntity {
     this.totalSalary,
   });
 
-  DailyAttendanceReportEntity.fromJson(Map<String, dynamic> json) {
-    workShiftId = json['work_shift_id'];
-    workShiftName = json['work_shift_name'];
-    employeeName = json['employee_name'];
-    employeeId = json['employee_id'];
-    shiftSalary = json['shift_salary'];
-
-    day = Formatter().dateTimeFromYyyyMmDDhHmMsS(json['day']);
-    timeCheckin = Formatter().dateTimeFromYyyyMmDDhHmMsS(json['time_checkin']);
-    timeCheckout =
-        Formatter().dateTimeFromYyyyMmDDhHmMsS(json['time_checkout']);
-
-    earlyTime = json['early_time'];
-    totalHoursWorked = json['total_hours_worked'];
-    salaryPerHour = json['salary_per_hour'];
-    lateHours = json['late_hours'];
-    latePenalty = json['late_penalty'];
-    overtime = json['overtime'];
-    bonusOvertime = json['bonus_overtime'];
-    commission = json['commission'];
-    totalSalary = json['total_salary'];
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'workShiftId': workShiftId,
@@ -76,9 +48,9 @@ class DailyAttendanceReportEntity {
       'employeeName': employeeName,
       'employeeId': employeeId,
       'shiftSalary': shiftSalary,
-      'day': day?.millisecondsSinceEpoch,
-      'timeCheckin': timeCheckin?.millisecondsSinceEpoch,
-      'timeCheckout': timeCheckout?.millisecondsSinceEpoch,
+      // 'day': day?.millisecondsSinceEpoch,
+      // 'timeCheckin': timeCheckin?.millisecondsSinceEpoch,
+      // 'timeCheckout': timeCheckout?.millisecondsSinceEpoch,
       'earlyTime': earlyTime,
       'totalHoursWorked': totalHoursWorked,
       'salaryPerHour': salaryPerHour,
@@ -98,15 +70,17 @@ class DailyAttendanceReportEntity {
       employeeName: map['employee_name'],
       employeeId: map['employee_id'],
       shiftSalary: map['shift_salary']?.toInt(),
-      day: map['day'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['day'])
-          : null,
-      timeCheckin: map['time_checkin'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['time_checkin'])
-          : null,
-      timeCheckout: map['time_checkout'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['time_checkout'])
-          : null,
+      // day: map['day'] != null
+      //     ? DateTime.fromMillisecondsSinceEpoch(int.parse(map['day']))
+      //     : null,
+      day: Formatter().dateTimeFromYyyyMmDDhHmMsS(map['day']),
+      timeCheckin: Formatter().dateTimeFromYyyyMmDDhHmMsS(map['time_checkin']),
+      timeCheckout:
+          Formatter().dateTimeFromYyyyMmDDhHmMsS(map['time_checkout']),
+
+      //day: map['day'] != null ? DateTime.fromMillisecondsSinceEpoch(map['day']) : null,
+      // timeCheckin: map['timeCheckin'] != null ? DateTime.fromMillisecondsSinceEpoch(map['timeCheckin']) : null,
+      // timeCheckout: map['timeCheckout'] != null ? DateTime.fromMillisecondsSinceEpoch(map['timeCheckout']) : null,
       earlyTime: map['early_time'],
       totalHoursWorked: map['total_hours_worked']?.toInt(),
       salaryPerHour: map['salary_per_hour']?.toInt(),
@@ -120,4 +94,7 @@ class DailyAttendanceReportEntity {
   }
 
   String toJson() => json.encode(toMap());
+
+  factory DailyAttendanceReportEntity.fromJson(String source) =>
+      DailyAttendanceReportEntity.fromMap(json.decode(source));
 }
