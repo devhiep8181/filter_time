@@ -22,8 +22,8 @@ class GetDailyAttendanceReportUseCase
 
   @override
   Future<List<DailyAttendanceReportEntity>> call(
-      GetDailyAttendanceReportParameter param) {
-    return attendanceRepository.getDailyAttendanceReportList(
+      GetDailyAttendanceReportParameter param) async {
+    return await attendanceRepository.getDailyAttendanceReportList(
         startDate: param.startDate, endDate: param.endDate);
   }
 }

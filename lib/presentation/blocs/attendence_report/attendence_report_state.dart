@@ -5,28 +5,24 @@ enum AttendenceReportStatus { initial, loading, success, error }
 extension AttendenceReportStautsX on AttendenceReportStatus {
   bool get isLoading => [AttendenceReportStatus.loading].contains(this);
   bool get isSucces => [AttendenceReportStatus.success].contains(this);
+  bool get isError => [AttendenceReportStatus.error].contains(this);
 }
 
 class AttendenceReportState extends Equatable {
-  final AttendenceReportStatus attendenceReportStatus;
+  const AttendenceReportState({required this.status, required this.listAttendanceReport});
+  final AttendenceReportStatus status;
   final List<DailyAttendanceReportEntity> listAttendanceReport;
-
-  const AttendenceReportState({
-    required this.attendenceReportStatus,
-    required this.listAttendanceReport,
-  });
-
   @override
-  List<Object?> get props => [attendenceReportStatus, listAttendanceReport];
+  List<Object> get props => [status, listAttendanceReport];
 
   AttendenceReportState copyWith({
-    AttendenceReportStatus? attendenceReportStatus,
+    AttendenceReportStatus? status,
     List<DailyAttendanceReportEntity>? listAttendanceReport,
   }) {
     return AttendenceReportState(
-      attendenceReportStatus:
-          attendenceReportStatus ?? this.attendenceReportStatus,
+      status: status ?? this.status,
       listAttendanceReport: listAttendanceReport ?? this.listAttendanceReport,
     );
   }
 }
+
