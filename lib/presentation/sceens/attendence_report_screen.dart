@@ -6,7 +6,6 @@ import 'package:month_year_picker/month_year_picker.dart';
 
 class AttendenceReportScreen extends StatelessWidget {
   const AttendenceReportScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +18,9 @@ class AttendenceReportScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: BlocBuilder<AttendenceReportBloc, AttendenceReportState>(
                 builder: (context, state) {
-                  if (state is AttendenceReportLoading) {
+                  if (state.status.isLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is AttendenceReportFinishedState) {
+                  } else if (state.status.isSucces) {
                     return state.listAttendanceReport.isEmpty? const _EmptyWidget() : ListView.builder(
                         itemCount: state.listAttendanceReport.length,
                         itemBuilder: (context, index) {
@@ -29,12 +28,7 @@ class AttendenceReportScreen extends StatelessWidget {
                               report: state.listAttendanceReport[index]);
                         });
                   }
-                   else if (state is AttendenceReportError) {
-                    return Text("State: ${state.error}");
-                  }
-                  return const SizedBox(
-                    child: Center(child: Text('Error')),
-                  );
+                  return Text("State: ${state.status.isError}");
                 },
               ))),
     );

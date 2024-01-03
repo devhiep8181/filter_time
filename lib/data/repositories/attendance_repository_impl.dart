@@ -8,19 +8,6 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
   AttendanceRepositoryImpl({required this.attendanceRemoteDatasoure});
 
-  @override
-  Future<dynamic> attend({
-    required final num longitude,
-    required final num latitude,
-    required final num distance,
-    required final num? timeSheetId,
-  }) async {
-    return await attendanceRemoteDatasoure.attend(
-        longitude: longitude,
-        latitude: latitude,
-        distance: distance,
-        timeSheetId: timeSheetId);
-  }
 
   @override
   Future<List<DailyAttendanceReportEntity>> getDailyAttendanceReportList({
@@ -31,13 +18,5 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
         startDate: startDate, endDate: endDate);
   }
 
-  @override
-  Future<List<AttendanceEntity>> getAttendanceScheduleList({
-    required DateTime startDate,
-    required DateTime endDate,
-    required num? timeSheetId,
-  }) async {
-    return await attendanceRemoteDatasoure.getAttendanceList(
-        startDate: startDate, endDate: endDate, timeSheetId: timeSheetId);
-  }
+
 }

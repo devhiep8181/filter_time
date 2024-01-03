@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';
 import 'package:flutter_app/domain/usecases/attendance/get_daily_attendance_report_use_case.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'attendence_report_event.dart';
 part 'attendence_report_state.dart';
@@ -14,7 +14,8 @@ class AttendenceReportBloc
   GetDailyAttendanceReportUseCase getDailyAttendanceReportUseCase;
 
   AttendenceReportBloc({required this.getDailyAttendanceReportUseCase})
-      : super(const AttendenceReportState()) {
+      : super(const AttendenceReportState(
+            status: AttendenceReportStatus.initial, listAttendanceReport: [])) {
     on<AttendenceReportInitEvent>(_onShowAttendenceReport);
     on<FilterTimeAttenceEvent>(_onFilterTimeAttenceEvent);
   }
@@ -22,20 +23,22 @@ class AttendenceReportBloc
   FutureOr<void> _onShowAttendenceReport(AttendenceReportInitEvent event,
       Emitter<AttendenceReportState> emit) async {
     try {
-      emit(AttendenceReportLoading());
+      emit(state.copyWith(status: AttendenceReportStatus.loading));
       final result = await getDailyAttendanceReportUseCase.call(
           GetDailyAttendanceReportParameter(
               startDate: DateTime(2020), endDate: DateTime(2024)));
-      emit(AttendenceReportFinishedState(listAttendanceReport: result));
+      emit(state.copyWith(
+          status: AttendenceReportStatus.success,
+          listAttendanceReport: result));
     } catch (e) {
-      emit(AttendenceReportError(error: e.toString()));
+      emit(state.copyWith(status: AttendenceReportStatus.error));
     }
   }
 
   FutureOr<void> _onFilterTimeAttenceEvent(
       FilterTimeAttenceEvent event, Emitter<AttendenceReportState> emit) async {
     try {
-      // emit(AttendenceReportLoading());
+      emit(state.copyWith(status: AttendenceReportStatus.loading));
       final resultRequestApi = await _fetchAttendanceReport(
           GetDailyAttendanceReportParameter(
               startDate: DateTime(2020), endDate: DateTime(2024)));
@@ -54,48 +57,11 @@ class AttendenceReportBloc
           result.addAll(_filterByDay(resultRequestApi, event.date!));
           break;
       }
-      // if (event.chooseFilter == "year") {
-      //   for (int i = 0; i < resultRequestApi.length; i++) {
-      //     if (resultRequestApi[i].day!.year == event.date!.year &&
-      //         resultRequestApi[i].day!.month == event.date!.month) {
-      //       result.add(resultRequestApi[i]);
-      //     }
-      //   }
-      // } else if (event.chooseFilter == "month") {
-      //   for (int i = 0; i < resultRequestApi.length; i++) {
-      //     if (resultRequestApi[i].day!.month == event.date!.month &&
-      //         resultRequestApi[i].day!.year == event.date!.year) {
-      //       result.add(resultRequestApi[i]);
-      //     }
-      //   }
-      // } else if (event.chooseFilter == "day") {
-      //   for (int i = 0; i < resultRequestApi.length; i++) {
-      //     if (resultRequestApi[i].day!.day == event.date!.day &&
-      //         resultRequestApi[i].day!.month == event.date!.month &&
-      //         resultRequestApi[i].day!.year == event.date!.year) {
-      //       result.add(resultRequestApi[i]);
-      //     }
-      //   }
-      // } else if (event.chooseFilter == "week") {
-      //   List<DateTime> dayOfWeek = [];
-      //   final DateTime startOfWeek = event.week!.start;
-      //   final DateTime endOfWeek = event.week!.end;
-      //   for (int i = 0; i <= endOfWeek.difference(startOfWeek).inDays; i++) {
-      //     DateTime currentDay = startOfWeek.add(Duration(days: i));
-      //     dayOfWeek.add(currentDay);
-      //   }
-      //   for (int i = 0; i < resultRequestApi.length; i++) {
-      //     for (var day in dayOfWeek) {
-      //       if (resultRequestApi[i].day!.compareTo(day) == 0) {
-      //         result.add(resultRequestApi[i]);
-      //       }
-      //     }
-      //   }
-      // }
-
-      emit(AttendenceReportFinishedState(listAttendanceReport: result));
+      emit(state.copyWith(
+          status: AttendenceReportStatus.success,
+          listAttendanceReport: result));
     } catch (e) {
-      emit(AttendenceReportError(error: e.toString()));
+      emit(state.copyWith(status: AttendenceReportStatus.error));
     }
   }
 

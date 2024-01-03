@@ -5,45 +5,24 @@ enum AttendenceReportStatus { initial, loading, success, error }
 extension AttendenceReportStautsX on AttendenceReportStatus {
   bool get isLoading => [AttendenceReportStatus.loading].contains(this);
   bool get isSucces => [AttendenceReportStatus.success].contains(this);
+  bool get isError => [AttendenceReportStatus.error].contains(this);
 }
 
 class AttendenceReportState extends Equatable {
-  const AttendenceReportState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class AttendenceReportInitial extends AttendenceReportState {}
-
-class AttendenceReportLoading extends AttendenceReportState {}
-
-
-class AttendenceReportFinishedState extends AttendenceReportState {
+  const AttendenceReportState({required this.status, required this.listAttendanceReport});
+  final AttendenceReportStatus status;
   final List<DailyAttendanceReportEntity> listAttendanceReport;
-
-  const AttendenceReportFinishedState({
-    required this.listAttendanceReport,
-  });
-
   @override
-  List<Object> get props => [listAttendanceReport];
+  List<Object> get props => [status, listAttendanceReport];
 
-  AttendenceReportFinishedState copyWith({
-    AttendenceReportStatus? attendenceReportStatus,
+  AttendenceReportState copyWith({
+    AttendenceReportStatus? status,
     List<DailyAttendanceReportEntity>? listAttendanceReport,
   }) {
-    return AttendenceReportFinishedState(
+    return AttendenceReportState(
+      status: status ?? this.status,
       listAttendanceReport: listAttendanceReport ?? this.listAttendanceReport,
     );
   }
 }
 
-class AttendenceReportError extends AttendenceReportState {
-  final String error;
-  
-  const AttendenceReportError({required this.error});
-
-  @override
-  List<Object> get props => [error];
-}
