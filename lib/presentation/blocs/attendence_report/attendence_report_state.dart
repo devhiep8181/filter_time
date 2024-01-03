@@ -16,7 +16,8 @@ class AttendenceReportState extends Equatable {
 
 class AttendenceReportInitial extends AttendenceReportState {}
 
-class AttendenceReporLoading extends AttendenceReportState {}
+class AttendenceReportLoading extends AttendenceReportState {}
+
 
 class AttendenceReportFinishedState extends AttendenceReportState {
   final List<DailyAttendanceReportEntity> listAttendanceReport;
@@ -38,10 +39,10 @@ class AttendenceReportFinishedState extends AttendenceReportState {
   }
 }
 
-class AttendenceReporError extends AttendenceReportState {
+class AttendenceReportError extends AttendenceReportState {
   final String error;
-
-  const AttendenceReporError({required this.error});
+  
+  const AttendenceReportError({required this.error});
 
   @override
   List<Object> get props => [error];

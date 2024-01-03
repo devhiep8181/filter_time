@@ -19,18 +19,18 @@ class AttendenceReportScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: BlocBuilder<AttendenceReportBloc, AttendenceReportState>(
                 builder: (context, state) {
-                  if (state is AttendenceReporLoading) {
+                  if (state is AttendenceReportLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is AttendenceReportFinishedState) {
-                    //print(state.listAttendanceReport);
-                    return ListView.builder(
+                    return state.listAttendanceReport.isEmpty? const _EmptyWidget() : ListView.builder(
                         itemCount: state.listAttendanceReport.length,
                         itemBuilder: (context, index) {
                           return WorkShiftCell(
                               report: state.listAttendanceReport[index]);
                         });
-                  } else if (state is AttendenceReporError) {
-                    return Text(state.error);
+                  }
+                   else if (state is AttendenceReportError) {
+                    return Text("State: ${state.error}");
                   }
                   return const SizedBox(
                     child: Center(child: Text('Error')),
@@ -41,11 +41,17 @@ class AttendenceReportScreen extends StatelessWidget {
   }
 }
 
-class _FilterItem extends StatefulWidget {
-  const _FilterItem({
-    super.key,
-  });
+class _EmptyWidget extends StatelessWidget {
+  const _EmptyWidget();
 
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text("Empty"));
+  }
+}
+
+class _FilterItem extends StatefulWidget {
+  const _FilterItem();
   @override
   State<_FilterItem> createState() => _FilterItemState();
 }
@@ -55,44 +61,77 @@ class _FilterItemState extends State<_FilterItem> {
   DateTime? _selected;
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
-      icon: const Icon(Icons.dehaze),
-      initialValue: selectedMenu,
-      onSelected: (ListFilter item) {
-        setState(() {
-          selectedMenu = item;
-        });
+    return BlocBuilder<AttendenceReportBloc, AttendenceReportState>(
+      builder: (context, state) {
+        return PopupMenuButton(
+          icon: const Icon(Icons.dehaze),
+          initialValue: selectedMenu,
+          onSelected: (ListFilter item) {
+            setState(() {
+              selectedMenu = item;
+            });
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<ListFilter>>[
+            PopupMenuItem<ListFilter>(
+              value: ListFilter.day,
+              child: const Text('Theo Ngày'),
+              onTap: () async {
+                const chooseFilter = "day";
+                DateTime? chooseTime = await _onPressedDay(context: context);
+                // ignore: use_build_context_synchronously
+                BlocProvider.of<AttendenceReportBloc>(context).add(
+                    FilterTimeAttenceEvent(
+                        date: chooseTime, chooseFilter: chooseFilter));
+              },
+            ),
+            PopupMenuItem<ListFilter>(
+              value: ListFilter.week,
+              child: const Text('Theo Tuần'),
+              onTap: () async {
+                const chooseFilter = "week";
+                DateTimeRange? chooseTime =
+                    await _onPressedWeek(context: context);
+                // ignore: use_build_context_synchronously
+                BlocProvider.of<AttendenceReportBloc>(context).add(
+                    FilterTimeAttenceEvent(
+                        date: null,
+                        chooseFilter: chooseFilter,
+                        week: chooseTime));
+              },
+            ),
+            PopupMenuItem<ListFilter>(
+              value: ListFilter.month,
+              child: const Text('Theo Tháng'),
+              onTap: () async {
+                const chooseFilter = "month";
+                DateTime? chooseTime = await _onPressedMonthYear(
+                    context: context, pickerMode: MonthYearPickerMode.month);
+                // ignore: use_build_context_synchronously
+                BlocProvider.of<AttendenceReportBloc>(context).add(
+                    FilterTimeAttenceEvent(
+                        date: chooseTime, chooseFilter: chooseFilter));
+              },
+            ),
+            PopupMenuItem<ListFilter>(
+              value: ListFilter.year,
+              child: const Text('Theo Năm'),
+              onTap: () async {
+                const chooseFilter = "year";
+                DateTime? chooseTime = await _onPressedMonthYear(
+                    context: context, pickerMode: MonthYearPickerMode.year);
+                // ignore: use_build_context_synchronously
+                BlocProvider.of<AttendenceReportBloc>(context).add(
+                    FilterTimeAttenceEvent(
+                        date: chooseTime, chooseFilter: chooseFilter));
+              },
+            ),
+          ],
+        );
       },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<ListFilter>>[
-        const PopupMenuItem<ListFilter>(
-          value: ListFilter.day,
-          child: Text('Theo Ngày'),
-        ),
-        const PopupMenuItem<ListFilter>(
-          value: ListFilter.week,
-          child: Text('Theo Tuần'),
-        ),
-        PopupMenuItem<ListFilter>(
-          value: ListFilter.month,
-          child: const Text('Theo Tháng'),
-          onTap: () {
-            _onPressed(context: context, pickerMode: MonthYearPickerMode.month);
-          },
-        ),
-        PopupMenuItem<ListFilter>(
-          value: ListFilter.year,
-          child: const Text('Theo Năm'),
-          onTap: () async {
-            DateTime? chooseTime = await _onPressed(
-                context: context, pickerMode: MonthYearPickerMode.year);
-            
-          },
-        ),
-      ],
     );
   }
 
-  Future<dynamic> _onPressed({
+  Future<dynamic> _onPressedMonthYear({
     required BuildContext context,
     required MonthYearPickerMode pickerMode,
     String? locale,
@@ -106,11 +145,21 @@ class _FilterItemState extends State<_FilterItem> {
       locale: localeObj,
       initialMonthYearPickerMode: pickerMode,
     );
-    if (selected != null) {
-      setState(() {
-        _selected = selected;
-      });
-    }
+    return selected;
+  }
+
+  Future<dynamic> _onPressedDay({required BuildContext context}) async {
+    final selected = await showDatePicker(
+        context: context, firstDate: DateTime(2020), lastDate: DateTime.now());
+    return selected;
+  }
+
+  Future<dynamic> _onPressedWeek({required BuildContext context}) async {
+    final selected = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2030),
+        currentDate: DateTime.now());
     return selected;
   }
 }

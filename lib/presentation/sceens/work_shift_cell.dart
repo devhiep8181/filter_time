@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/formatter.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';

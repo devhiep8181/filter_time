@@ -9,18 +9,20 @@ class AttendenceReportInitEvent extends AttendenceReportEvent {}
 
 class ShowAttendenceReportEvent extends AttendenceReportEvent {
   final List<DailyAttendanceReportEntity> listAttendanceReport;
+  final DateTime? date;
 
   ShowAttendenceReportEvent({
     required this.listAttendanceReport,
+    required this.date,
   });
 
   @override
-  List<Object?> get props => [listAttendanceReport];
+  List<Object?> get props => [listAttendanceReport, date];
 }
 
 class FilterTimeAttenceEvent extends AttendenceReportEvent {
   final DateTime? date;
-  FilterTimeAttenceEvent({
-    required this.date,
-  });
+  final DateTimeRange? week;
+  final String chooseFilter;
+  FilterTimeAttenceEvent({required this.date, required this.chooseFilter, this.week});
 }
