@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
@@ -40,4 +38,6 @@ class User extends Equatable {
         token,
         tokenPhp,
       ];
+
+
 }

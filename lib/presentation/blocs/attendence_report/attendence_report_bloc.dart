@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/error/failures.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';
 import 'package:flutter_app/domain/usecases/attendance/get_daily_attendance_report_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,9 +29,12 @@ class AttendenceReportBloc
       final result = await getDailyAttendanceReportUseCase.call(
           GetDailyAttendanceReportParameter(
               startDate: DateTime(2020), endDate: DateTime(2024)));
-      emit(state.copyWith(
-          status: AttendenceReportStatus.success,
-          listAttendanceReport: result));
+      emit(result.fold(
+          (failure) => state.copyWith(
+              status: AttendenceReportStatus.error, listAttendanceReport: []),
+          (success) => state.copyWith(
+              status: AttendenceReportStatus.success,
+              listAttendanceReport: success)));
     } catch (e) {
       emit(state.copyWith(status: AttendenceReportStatus.error));
     }
@@ -42,19 +47,24 @@ class AttendenceReportBloc
       final resultRequestApi = await _fetchAttendanceReport(
           GetDailyAttendanceReportParameter(
               startDate: DateTime(2020), endDate: DateTime(2024)));
+
+      //convert Either<Failure, List<DailyAttendanceReportEntity>> => List<DailyAttendanceReportEntity>>
+      final List<DailyAttendanceReportEntity> resultConvert =
+          resultRequestApi.getOrElse(() => []);
+          
       final List<DailyAttendanceReportEntity> result = [];
       switch (event.chooseFilter) {
         case "year":
-          result.addAll(_filterByYear(resultRequestApi, event.date!));
+          result.addAll(_filterByYear(resultConvert, event.date!));
           break;
         case "month":
-          result.addAll(_filterByMonth(resultRequestApi, event.date!));
+          result.addAll(_filterByMonth(resultConvert, event.date!));
           break;
         case "week":
-          result.addAll(_filterByWeek(resultRequestApi, event.week!));
+          result.addAll(_filterByWeek(resultConvert, event.week!));
           break;
         case "day":
-          result.addAll(_filterByDay(resultRequestApi, event.date!));
+          result.addAll(_filterByDay(resultConvert, event.date!));
           break;
       }
       emit(state.copyWith(
@@ -65,8 +75,9 @@ class AttendenceReportBloc
     }
   }
 
-  Future<List<DailyAttendanceReportEntity>> _fetchAttendanceReport(
-      GetDailyAttendanceReportParameter parameter) async {
+  Future<Either<Failure, List<DailyAttendanceReportEntity>>>
+      _fetchAttendanceReport(
+          GetDailyAttendanceReportParameter parameter) async {
     return await getDailyAttendanceReportUseCase.call(parameter);
   }
 }

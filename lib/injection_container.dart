@@ -1,5 +1,5 @@
 import 'package:flutter_app/configs/app_cache.dart';
-import 'package:flutter_app/data/datasource/attendance_remote_datasource.dart';
+import 'package:flutter_app/data/datasource/attendance/attendance_remote_datasource.dart';
 import 'package:flutter_app/data/repositories/attendance_repository_impl.dart';
 import 'package:flutter_app/domain/repositories/attendance_repository.dart';
 import 'package:flutter_app/domain/usecases/attendance/get_daily_attendance_report_use_case.dart';

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/core/utils/formatter.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';
+import 'package:flutter_app/presentation/sceens/work_shift_detail_page.dart';
 
-class WorkShiftCell extends StatelessWidget {
+class WorkShiftCell extends StatefulWidget {
   final DailyAttendanceReportEntity report;
   const WorkShiftCell({super.key, required this.report});
 
+  @override
+  State<WorkShiftCell> createState() => _WorkShiftCellState();
+}
+
+class _WorkShiftCellState extends State<WorkShiftCell> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,14 +31,18 @@ class WorkShiftCell extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("${report.workShiftName}"),
+                      Text("${widget.report.workShiftName}"),
                       const SizedBox(height: 4),
-                      _buildShifDay(context: context, date: report.day),
+                      _buildShifDay(context: context, date: widget.report.day),
                     ],
                   ),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => WorkShiftDetailPage(
+                                reportEntity: widget.report)));
+                      },
                       child: const Text("Chi tiết"))
                 ],
               ),
@@ -50,7 +60,7 @@ class WorkShiftCell extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12)),
                     child: _buildShifTime(
                         context: context,
-                        time: report.timeCheckin,
+                        time: widget.report.timeCheckin,
                         label: "Giờ vào"),
                   ),
                   Container(
@@ -60,7 +70,7 @@ class WorkShiftCell extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12)),
                     child: _buildShifTime(
                         context: context,
-                        time: report.timeCheckout,
+                        time: widget.report.timeCheckout,
                         label: "Giờ ra"),
                   ),
                 ],

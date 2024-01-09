@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter_app/core/error/failures.dart';
 import 'package:flutter_app/core/usecase/usecase.dart';
 import 'package:flutter_app/domain/entites/daily_attendance_report_entity.dart';
 import 'package:flutter_app/domain/repositories/attendance_repository.dart';
@@ -21,9 +23,9 @@ class GetDailyAttendanceReportUseCase
   GetDailyAttendanceReportUseCase({required this.attendanceRepository});
 
   @override
-  Future<List<DailyAttendanceReportEntity>> call(
+  Future<Either<Failure, List<DailyAttendanceReportEntity>>> call(
       GetDailyAttendanceReportParameter param) async {
-    return await attendanceRepository.getDailyAttendanceReportList(
-        startDate: param.startDate, endDate: param.endDate);
+    return Right(await attendanceRepository.getDailyAttendanceReportList(
+        startDate: param.startDate, endDate: param.endDate));
   }
 }

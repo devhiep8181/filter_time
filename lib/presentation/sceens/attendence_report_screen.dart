@@ -21,12 +21,14 @@ class AttendenceReportScreen extends StatelessWidget {
                   if (state.status.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state.status.isSucces) {
-                    return state.listAttendanceReport.isEmpty? const _EmptyWidget() : ListView.builder(
-                        itemCount: state.listAttendanceReport.length,
-                        itemBuilder: (context, index) {
-                          return WorkShiftCell(
-                              report: state.listAttendanceReport[index]);
-                        });
+                    return state.listAttendanceReport.isEmpty
+                        ? const _EmptyWidget()
+                        : ListView.builder(
+                            itemCount: state.listAttendanceReport.length,
+                            itemBuilder: (context, index) {
+                              return WorkShiftCell(
+                                  report: state.listAttendanceReport[index]);
+                            });
                   }
                   return Text("State: ${state.status.isError}");
                 },
@@ -73,9 +75,11 @@ class _FilterItemState extends State<_FilterItem> {
                 const chooseFilter = "day";
                 DateTime? chooseTime = await _onPressedDay(context: context);
                 // ignore: use_build_context_synchronously
-                BlocProvider.of<AttendenceReportBloc>(context).add(
-                    FilterTimeAttenceEvent(
-                        date: chooseTime, chooseFilter: chooseFilter));
+                if (chooseTime != null) {
+                  BlocProvider.of<AttendenceReportBloc>(context).add(
+                      FilterTimeAttenceEvent(
+                          date: chooseTime, chooseFilter: chooseFilter));
+                }
               },
             ),
             PopupMenuItem<ListFilter>(
@@ -86,11 +90,13 @@ class _FilterItemState extends State<_FilterItem> {
                 DateTimeRange? chooseTime =
                     await _onPressedWeek(context: context);
                 // ignore: use_build_context_synchronously
-                BlocProvider.of<AttendenceReportBloc>(context).add(
-                    FilterTimeAttenceEvent(
-                        date: null,
-                        chooseFilter: chooseFilter,
-                        week: chooseTime));
+                if (chooseTime != null) {
+                  BlocProvider.of<AttendenceReportBloc>(context).add(
+                      FilterTimeAttenceEvent(
+                          date: null,
+                          chooseFilter: chooseFilter,
+                          week: chooseTime));
+                }
               },
             ),
             PopupMenuItem<ListFilter>(
@@ -101,9 +107,11 @@ class _FilterItemState extends State<_FilterItem> {
                 DateTime? chooseTime = await _onPressedMonthYear(
                     context: context, pickerMode: MonthYearPickerMode.month);
                 // ignore: use_build_context_synchronously
-                BlocProvider.of<AttendenceReportBloc>(context).add(
-                    FilterTimeAttenceEvent(
-                        date: chooseTime, chooseFilter: chooseFilter));
+                if (chooseTime != null) {
+                  BlocProvider.of<AttendenceReportBloc>(context).add(
+                      FilterTimeAttenceEvent(
+                          date: chooseTime, chooseFilter: chooseFilter));
+                }
               },
             ),
             PopupMenuItem<ListFilter>(
@@ -114,9 +122,11 @@ class _FilterItemState extends State<_FilterItem> {
                 DateTime? chooseTime = await _onPressedMonthYear(
                     context: context, pickerMode: MonthYearPickerMode.year);
                 // ignore: use_build_context_synchronously
-                BlocProvider.of<AttendenceReportBloc>(context).add(
-                    FilterTimeAttenceEvent(
-                        date: chooseTime, chooseFilter: chooseFilter));
+                if (chooseTime != null) {
+                  BlocProvider.of<AttendenceReportBloc>(context).add(
+                      FilterTimeAttenceEvent(
+                          date: chooseTime, chooseFilter: chooseFilter));
+                }
               },
             ),
           ],
